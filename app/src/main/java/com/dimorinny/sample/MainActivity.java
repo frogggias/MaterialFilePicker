@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withRequestCode(FILE_PICKER_REQUEST_CODE)
                 .withHiddenFiles(true)
+                .withTheme(R.style.AppTheme)
                 .start();
     }
 
