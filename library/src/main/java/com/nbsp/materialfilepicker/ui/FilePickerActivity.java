@@ -34,6 +34,8 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
 
     public static final String ARG_THEME = "arg_theme";
 
+    public static final String ARG_TITLE = "arg_title";
+
     public static final String STATE_START_PATH = "state_start_path";
     private static final String STATE_CURRENT_PATH = "state_current_path";
 
@@ -43,6 +45,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
     private Toolbar mToolbar;
     private String mStartPath = Environment.getExternalStorageDirectory().getAbsolutePath();
     private String mCurrentPath = mStartPath;
+    private String mTitle;
 
     private CompositeFilter mFilter;
 
@@ -84,6 +87,10 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
             }
         }
 
+        if (getIntent().hasExtra(ARG_TITLE)) {
+            mTitle = getIntent().getStringExtra(ARG_TITLE);
+        }
+
         if (getIntent().hasExtra(ARG_START_PATH)) {
             mStartPath = getIntent().getStringExtra(ARG_START_PATH);
             mCurrentPath = mStartPath;
@@ -106,15 +113,23 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // Truncate start of toolbar title
+        // Truncate start of path
         try {
-            Field f = mToolbar.getClass().getDeclaredField("mTitleTextView");
-            f.setAccessible(true);
+            Field f;
+            if (TextUtils.isEmpty(mTitle)) {
+                f = mToolbar.getClass().getDeclaredField("mTitleTextView");
+            } else {
+                f = mToolbar.getClass().getDeclaredField("mSubtitleTextView");
+            }
 
+            f.setAccessible(true);
             TextView textView = (TextView) f.get(mToolbar);
             textView.setEllipsize(TextUtils.TruncateAt.START);
         } catch (Exception ignored) {}
 
+        if (!TextUtils.isEmpty(mTitle)) {
+            setTitle(mTitle);
+        }
         updateTitle();
     }
 
@@ -131,11 +146,15 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
 
     private void updateTitle() {
         if (getSupportActionBar() != null) {
-            String title = mCurrentPath.isEmpty() ? "/" : mCurrentPath;
-            if (title.startsWith(mStartPath)) {
-                title = title.replaceFirst(mStartPath, getString(R.string.start_path_name));
+            String titlePath = mCurrentPath.isEmpty() ? "/" : mCurrentPath;
+            if (titlePath.startsWith(mStartPath)) {
+                titlePath = titlePath.replaceFirst(mStartPath, getString(R.string.start_path_name));
             }
-            getSupportActionBar().setTitle(title);
+            if (TextUtils.isEmpty(mTitle)) {
+                getSupportActionBar().setTitle(titlePath);
+            } else {
+                getSupportActionBar().setSubtitle(titlePath);
+            }
         }
     }
 

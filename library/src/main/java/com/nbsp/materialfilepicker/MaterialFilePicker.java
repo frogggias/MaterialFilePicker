@@ -30,6 +30,7 @@ public class MaterialFilePicker {
     private String mCurrentPath;
     private Boolean mShowHidden = false;
     private Integer mThemeResId;
+    private String mTitle;
 
     public MaterialFilePicker() {
     }
@@ -133,6 +134,7 @@ public class MaterialFilePicker {
         return this;
     }
 
+
     /**
      * Set theme of picker
      * Must be AppCompat with windowActionBar=false
@@ -141,6 +143,16 @@ public class MaterialFilePicker {
         mThemeResId = theme;
         return this;
     }
+
+
+    /**
+     * Set title of picker
+     */
+    public MaterialFilePicker withTitle(String title) {
+        mTitle = title;
+        return this;
+    }
+
 
     public CompositeFilter getFilter() {
         ArrayList<FileFilter> filters = new ArrayList<>();
@@ -185,6 +197,10 @@ public class MaterialFilePicker {
 
         if (mThemeResId != null) {
             intent.putExtra(FilePickerActivity.ARG_THEME, mThemeResId);
+        }
+
+        if (mTitle != null) {
+            intent.putExtra(FilePickerActivity.ARG_TITLE, mTitle);
         }
 
         return intent;
